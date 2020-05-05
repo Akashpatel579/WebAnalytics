@@ -26,10 +26,5 @@ public class HomeController {
 		return ResponseEntity.ok().build();
 	}
 
-//	@PostMapping(value = {"/clickAnalytics"})
-//	public @ResponseBody boolean storeClickEvent(@RequestParam String x, @RequestParam String y){
-//		System.out.println("Data logged! " + x + y);
-//		return true;
-//	}
 
 }
