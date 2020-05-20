@@ -79,23 +79,50 @@ footer {
         $("body").click(function(event){
             var x = event.clientX;
             var y = event.clientY;
-            var coords = {
+            var coords_json = {
                   "x" : x,
                   "y" :y
                };
+            var coords_xml = "<root><x>"+x+"</x><y>"+y+"</y></root>";
 
         $.ajax({
             type: "POST",
             contentType : 'application/json; charset=utf-8',
             dataType : 'json',
             url: "clickAnalytics",
-            data: JSON.stringify(coords),
+            data: JSON.stringify(coords_json),
 
             success:function(result) {
               alert('ok');
             }
 
-    });
+        });
+  });
+});
+</script>
+
+
+<script>
+
+    $(document).ready(function(event){
+        $("body").dblclick(function(event){
+        var x = event.clientX;
+        var y = event.clientY;
+        var coords_xml = "<root><x>"+x+"</x><y>"+y+"</y></root>"
+        alert( "Handler for .dblclick() called." + x + y );
+
+        $.ajax({
+            type: "POST",
+            contentType : 'application/xml; charset=utf-8',
+            dataType : 'xml',
+            url: "clickAnalyticsxml",
+            data: coords_xml,
+
+            success:function(result) {
+              alert('ok');
+            }
+
+        });
 
   });
 });

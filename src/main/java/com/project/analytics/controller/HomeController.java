@@ -1,7 +1,5 @@
 package com.project.analytics.controller;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.analytics.model.ClickAnalytics;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -30,10 +28,9 @@ public class HomeController {
 		return "index";
 	}
 
-	@PostMapping(value = {"/clickAnalytics"}, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity storeClickEvent(@RequestBody ClickAnalytics clickAnalytics){
+	@PostMapping(value = {"/clickAnalytics"}, consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
+	public ResponseEntity storeClickEventJSON(@RequestBody ClickAnalytics clickAnalytics){
 
-		String clickEventData = clickAnalytics.getX() + "  " + clickAnalytics.getY();
 		System.out.println("Data logged! " + clickAnalytics.getX() + "  " + clickAnalytics.getY());
 
 		KafkaProducer<String, String> kafkaProducer = produce();
@@ -41,7 +38,26 @@ public class HomeController {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 
-		kafkaProducer.send(new ProducerRecord(TOPIC, "Key", mapper.writeValueAsString(clickAnalytics)));
+			kafkaProducer.send(new ProducerRecord(TOPIC, "Key", mapper.writeValueAsString(clickAnalytics)));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		} finally {
+			kafkaProducer.close();
+		}
+		return ResponseEntity.ok().build();
+	}
+
+	@PostMapping(value = {"/clickAnalyticsxml"}, consumes = { MediaType.APPLICATION_XML_VALUE })
+	public ResponseEntity storeDoubleClickEventXML(@RequestBody ClickAnalytics clickAnalytics){
+
+		System.out.println("Data logged! " + clickAnalytics.getX() + "  " + clickAnalytics.getY());
+
+		KafkaProducer<String, String> kafkaProducer = produce();
+
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+
+			kafkaProducer.send(new ProducerRecord(TOPIC, "Key", mapper.writeValueAsString(clickAnalytics)));
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		} finally {
@@ -51,7 +67,7 @@ public class HomeController {
 	}
 
 
-	public static KafkaProducer<String, String> produce() {
+	private static KafkaProducer<String, String> produce() {
 		// Set properties used to configure the producer
 		Properties properties = new Properties();
 		// Set the brokers (bootstrap servers)
